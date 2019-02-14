@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.Double?>
+
+<GridPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="geekbrains.chat.auth.AuthController"
+        maxHeight="Infinity" maxWidth="Infinity"
+        prefHeight="240.0" prefWidth="240.0"
+        stylesheets="/assets/styles/Chat.css"
+        styleClass="root">
+    <fx:define>
+        <Double fx:id="padding" fx:value="20.0"/>
+        <Double fx:id="labelWidth" fx:value="70.0"/>
+        <Double fx:id="inputHeight" fx:value="40.0"/>
+    </fx:define>
+    <VBox GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS" spacing="$padding">
+        <padding>
+            <Insets top="$padding" right="$padding" bottom="$padding" left="$padding"/>
+        </padding>
+        <BorderPane>
+            <center>
+                <ImageView styleClass="logotype">
+                    <image>
+                        <Image url="@/assets/images/logo.png"/>
+                    </image>
+                </ImageView>
+            </center>
+        </BorderPane>
+        <GridPane hgap="$padding" vgap="$padding">
+            <columnConstraints>
+                <ColumnConstraints minWidth="$labelWidth" prefWidth="$labelWidth" maxWidth="Infinity"
+                                   halignment="RIGHT"/>
+                <ColumnConstraints minWidth="200" prefWidth="200" maxWidth="Infinity" hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <!-- Login Field -->
+            <Label text="Login:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="loginField" prefHeight="$inputHeight" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+            <!-- Password Field -->
+            <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <PasswordField fx:id="passwordField" prefHeight="$inputHeight" GridPane.columnIndex="1"
+                           GridPane.rowIndex="1"/>
+
+            <!-- Submit Button -->
+            <Button fx:id="submitButton" text="Enter ChatApp"
+                    prefWidth="140" prefHeight="40" defaultButton="true"
+                    GridPane.columnIndex="0" GridPane.rowIndex="2"
+                    GridPane.columnSpan="2" GridPane.rowSpan="1"
+                    GridPane.halignment="RIGHT"
+                    onAction="#handleSubmitButtonAction"/>
+        </GridPane>
+    </VBox>
+</GridPane>

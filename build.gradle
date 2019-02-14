@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'application'
+    id "org.flywaydb.flyway" version "5.2.4"
+    id 'nu.studer.jooq' version '3.0.3'
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+group 'geekbrains'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.jooq:jooq:3.11.2'
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.14'
+    runtime "com.h2database:h2:1.4.197"
+    jooqRuntime 'com.h2database:h2:1.4.197'
+}
+
+application {
+    mainClassName = 'geekbrains.chat.Client'
+}
+
+flyway {
+    url = 'jdbc:h2:file:./target/db'
+    user = 'sa'
+}
+
+jooq {
+    version = '3.11.2'
+    edition = 'OSS'
+    sample(sourceSets.main) {
+        jdbc {
+            driver = 'org.h2.Driver'
+            url = 'jdbc:h2:./target/db;AUTO_SERVER=TRUE'
+            user = 'sa'
+            password = ''
+        }
+        generator {
+            name = 'org.jooq.codegen.DefaultGenerator'
+            database {
+                name = 'org.jooq.meta.h2.H2Database'
+                includes = '.*'
+                excludes = ''
+            }
+            target {
+                packageName = 'geekbrains.chat'
+            }
+        }
+    }
+}
+
+tasks.generateSampleJooqSchemaSource.with {
+    def out = new ByteArrayOutputStream()
+    javaExecSpec = { JavaExecSpec s ->
+        s.standardOutput = out
+        s.errorOutput = out
+        s.ignoreExitValue = true
+        s.jvmArgs '-Xmx512M'
+    }
+    execResultHandler = { ExecResult r ->
+        if (r.exitValue != 0) {
+            throw new RuntimeException('jOOQ source code generation failed:\n\n' + out.toString())
+        }
+    }
+}
