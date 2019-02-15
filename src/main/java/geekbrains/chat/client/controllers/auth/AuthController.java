@@ -1,9 +1,6 @@
-package geekbrains.chat.auth;
+package geekbrains.chat.client.controllers.auth;
 
-import geekbrains.chat.auth.events.SubmitFormEvent;
-import geekbrains.chat.database.Database;
-import geekbrains.chat.database.PasswordIsInvalid;
-import geekbrains.chat.public_.tables.records.UsersRecord;
+import geekbrains.chat.client.controllers.auth.events.SubmitFormEvent;
 import geekbrains.chat.utils.events.ControllerEventDispatcher;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,7 +12,6 @@ import javafx.scene.control.TextField;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
-import javax.xml.crypto.Data;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -43,14 +39,14 @@ public class AuthController implements Initializable {
 
     @FXML
     private void handleSubmitButtonAction(ActionEvent event) {
-        try {
-            UsersRecord user = Database.getUser(loginField.getText(), passwordField.getText());
-        } catch (PasswordIsInvalid passwordIsInvalid) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Validation error");
-            alert.setHeaderText("Password is not correct!");
+        this.dispatcher.dispatch(new SubmitFormEvent(loginField.getText(), passwordField.getText()));
+    }
 
-            alert.showAndWait();
-        }
+    public void userIsInvalid() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation error");
+        alert.setHeaderText("Password is not correct!");
+
+        alert.showAndWait();
     }
 }

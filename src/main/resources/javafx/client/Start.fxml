@@ -12,8 +12,8 @@
 <BorderPane
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
-        fx:controller="geekbrains.chat.start.StartController"
-        stylesheets="/assets/styles/Chat.css"
+        fx:controller="geekbrains.chat.client.controllers.start.StartController"
+        stylesheets="/assets/styles/Modal.css"
         prefHeight="$height" prefWidth="$width">
     <fx:define>
         <Double fx:id="width"  fx:value="380.0"/>

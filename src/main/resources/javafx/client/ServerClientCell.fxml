@@ -1,0 +1,12 @@
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<fx:root type="javafx.scene.control.ListCell" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <graphic>
+        <HBox>
+            <children>
+                <Label fx:id="userNameField" />
+            </children>
+        </HBox>
+    </graphic>
+</fx:root>

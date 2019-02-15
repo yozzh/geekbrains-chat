@@ -1,4 +1,4 @@
-package geekbrains.chat.start.events;
+package geekbrains.chat.client.controllers.start.events;
 
 import geekbrains.chat.utils.events.ControllerEvent;
 

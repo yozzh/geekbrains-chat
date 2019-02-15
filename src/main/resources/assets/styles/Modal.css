@@ -1,0 +1,11 @@
+.root {
+    -fx-background-color: #EDEFF7;
+}
+
+.loading {
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+}
+
+.loading__text {
+    -fx-font-size: 24;
+}

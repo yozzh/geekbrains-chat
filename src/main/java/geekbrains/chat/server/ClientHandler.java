@@ -1,8 +1,12 @@
 package geekbrains.chat.server;
 
-import geekbrains.chat.Server;
-import geekbrains.chat.providers.chat.ChatMessageContainer;
-import geekbrains.chat.providers.chat.MessageType;
+import geekbrains.chat.database.Database;
+import geekbrains.chat.database.PasswordIsInvalid;
+import geekbrains.chat.providers.chat.models.ChatMessageContainer;
+import geekbrains.chat.providers.chat.models.MessageType;
+import geekbrains.chat.providers.chat.models.UsersChatMessageContainer;
+import geekbrains.chat.public_.tables.records.UsersRecord;
+import geekbrains.chat.server.models.ServerClient;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,7 +16,7 @@ public class ClientHandler extends Thread {
     private final Logger log;
     private Socket socket;
     private Server server;
-    private String username;
+    private ServerClient client;
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
@@ -39,12 +43,25 @@ public class ClientHandler extends Thread {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-                this.setUsername(userMessage.getContent());
-                break;
+
+                String[] parts = userMessage.getContent().split(":");
+                UsersRecord user = getUser(parts[0], parts[1]);
+                if (user == null) {
+                    this.sendMessage(new ChatMessageContainer(
+                        MessageType.USER_IS_INVALID
+                    ));
+                } else {
+                    this.client = new ServerClient(user, out);
+                    server.addUser(this.client);
+                    break;
+                }
             }
 
             this.sendMessage(new ChatMessageContainer(
                 MessageType.READY_FOR_MESSAGING
+            ));
+            this.sendMessage(new UsersChatMessageContainer(
+                server.getUsers()
             ));
 
             while (true) {
@@ -59,23 +76,23 @@ public class ClientHandler extends Thread {
                 }
                 log.info("Message from client received!");
 
-                server.sendUserMessage(username, message.getContent());
+                server.forecastMessage(this.client, message.getContent());
             }
-        } catch (EOFException e) {
-            server.removeUser(username, out);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    void setUsername(String username) {
-        if (username == null) return;
-
-        this.username = username;
-        server.addUser(this.username, this.out);
+    UsersRecord getUser(String username, String password) {
+        try {
+            return Database.getUser(username, password);
+        } catch (PasswordIsInvalid passwordIsInvalid) {
+            return null;
+        }
     }
 
     void sendMessage(ChatMessageContainer message) throws IOException {
+        log.info(message.getType().toString());
         out.writeObject(message);
     }
 }

@@ -14,6 +14,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
     private static DSLContext context;
@@ -59,5 +61,14 @@ public class Database {
         }
 
         return user;
+    }
+
+    public static List<UsersRecord> getUsers() {
+        Result<Record> users = context.select().from(Users.USERS).fetch();
+        List<UsersRecord> result = new ArrayList<>();
+        for (Record r : users) {
+            result.add(r.into(Users.USERS));
+        }
+        return result;
     }
 }
