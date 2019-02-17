@@ -101,54 +101,62 @@ public class ClientApp extends javafx.application.Application implements Control
     }
 
     public void update(Object incomingMessage) {
-        if (incomingMessage instanceof ChatMessageContainer) {
-            ChatMessageContainer messageContainer = (ChatMessageContainer)incomingMessage;
-            switch (messageContainer.getType()) {
-                case READY_FOR_LOGIN:
-                    if (authController != null) return;
+        if (incomingMessage instanceof UsersChatMessageContainer) {
+            incomingMessageListener((UsersChatMessageContainer)incomingMessage);
+        } else if (incomingMessage instanceof ChatMessageContainer) {
+            incomingMessageListener((ChatMessageContainer)incomingMessage);
+        }
+    }
 
-                    Platform.runLater(() -> {
-                        try {
-                            stage.close();
+    private void incomingMessageListener(ChatMessageContainer incomingMessage) {
+        switch (incomingMessage.getType()) {
+            case READY_FOR_LOGIN:
+                if (authController != null) return;
 
-                            Parent authRoot = authWindow();
-                            stage = new Stage();
-                            stage.setScene(new Scene(authRoot));
-                            stage.show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    break;
-                case USER_IS_INVALID:
-                    Platform.runLater(() -> {
-                        authController.userIsInvalid();
-                    });
-                    break;
-                case READY_FOR_MESSAGING:
-                    if (chatController != null) return;
+                Platform.runLater(() -> {
+                    try {
+                        stage.close();
 
-                    Platform.runLater(() -> {
-                        try {
-                            stage.close();
+                        Parent authRoot = authWindow();
+                        stage = new Stage();
+                        stage.setScene(new Scene(authRoot));
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                break;
+            case USER_IS_INVALID:
+                Platform.runLater(() -> {
+                    authController.userIsInvalid();
+                });
+                break;
+            case READY_FOR_MESSAGING:
+                if (chatController != null) return;
 
-                            Parent chatRoot = chatWindow();
-                            stage = new Stage();
-                            stage.setScene(new Scene(chatRoot));
-                            stage.show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    break;
-            }
-        } else if (incomingMessage instanceof UsersChatMessageContainer) {
-            UsersChatMessageContainer messageContainer = (UsersChatMessageContainer)incomingMessage;
-            switch (messageContainer.getType()) {
-                case USERS_LIST:
-                    System.out.println(messageContainer.getType());
-                    break;
-            }
+                Platform.runLater(() -> {
+                    try {
+                        stage.close();
+
+                        Parent chatRoot = chatWindow();
+                        stage = new Stage();
+                        stage.setScene(new Scene(chatRoot));
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                break;
+        }
+    }
+
+    private void incomingMessageListener(UsersChatMessageContainer incomingMessage) {
+        switch (incomingMessage.getType()) {
+            case USERS_LIST:
+                Platform.runLater(() -> {
+                    chatController.setClientsList(incomingMessage.getUsers());
+                });
+                break;
         }
     }
 }

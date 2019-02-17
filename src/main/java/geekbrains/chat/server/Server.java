@@ -3,6 +3,7 @@ package geekbrains.chat.server;
 import geekbrains.chat.database.Database;
 import geekbrains.chat.providers.chat.models.ChatMessageContainer;
 import geekbrains.chat.providers.chat.models.MessageType;
+import geekbrains.chat.providers.chat.models.UsersChatMessageContainer;
 import geekbrains.chat.public_.tables.records.UsersRecord;
 import geekbrains.chat.server.models.ServerClient;
 import geekbrains.chat.server.models.UserWithStatus;
@@ -10,13 +11,11 @@ import geekbrains.chat.server.models.UserWithStatus;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Server {
     private final ServerSocket listener;
@@ -53,7 +52,10 @@ public class Server {
     }
 
     synchronized void removeUser(ServerClient client) {
+        System.out.println("Removing users");
+        System.out.println("From: " + clients.size());
         clients.remove(client);
+        System.out.println("To: " + clients.size());
         log.info("User has been disconnected: " + client.getData().getName());
     }
 
@@ -62,13 +64,17 @@ public class Server {
         List<UserWithStatus> result = new ArrayList<>();
 
         for (UsersRecord user : users) {
+            long count = clients
+                    .stream()
+                    .filter(client -> client.getData().getName().equals(user.getName()))
+                    .count();
             result.add(new UserWithStatus(
-                user,
-                false
+                    user,
+                    (count > 0)
             ));
         }
 
-        return result;
+        return result.stream().sorted(Comparator.comparing(UserWithStatus::isOnline, Comparator.reverseOrder())).collect(Collectors.toList());
     }
 
     private Object getMessage(String username, String messageText) {
@@ -82,6 +88,20 @@ public class Server {
         String username = sourceClient.getData().getName();
         for (ServerClient client : clients) {
             client.getStream().writeObject(getMessage(username, messageText));
+        }
+    }
+
+    void sendUsersList() {
+        UsersChatMessageContainer message = new UsersChatMessageContainer(
+                getUsers()
+        );
+
+        try {
+            for (ServerClient client : clients) {
+                client.getStream().writeObject(message);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

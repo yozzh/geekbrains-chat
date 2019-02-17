@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.Double?>
+
 <GridPane
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
@@ -11,14 +11,7 @@
         prefHeight="480" prefWidth="640"
         stylesheets="/assets/styles/Chat.css"
         styleClass="root">
-    <fx:define>
-        <Double fx:id="padding" fx:value="20.0"/>
-        <Double fx:id="labelWidth" fx:value="70.0"/>
-        <Double fx:id="inputHeight" fx:value="40.0"/>
-    </fx:define>
     <HBox GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
-        <BorderPane minWidth="200" styleClass="users-list-container">
-            <ListView fx:id="usersListView" />
-        </BorderPane>
+        <ListView fx:id="usersListView" prefWidth="240" />
     </HBox>
 </GridPane>

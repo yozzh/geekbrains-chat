@@ -1,3 +1,7 @@
 .users-list-container {
     -fx-background-color: #EDEFF7;
 }
+
+.user-name {
+    -fx-font-size: 14;
+}

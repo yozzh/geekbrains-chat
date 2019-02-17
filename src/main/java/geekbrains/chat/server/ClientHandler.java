@@ -20,7 +20,7 @@ public class ClientHandler extends Thread {
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public ClientHandler(Server server, Socket socket) throws IOException {
+    ClientHandler(Server server, Socket socket) throws IOException {
         log = Logger.getLogger("ClientHandler");
         this.server = server;
         this.socket = socket;
@@ -60,9 +60,7 @@ public class ClientHandler extends Thread {
             this.sendMessage(new ChatMessageContainer(
                 MessageType.READY_FOR_MESSAGING
             ));
-            this.sendMessage(new UsersChatMessageContainer(
-                server.getUsers()
-            ));
+            server.sendUsersList();
 
             while (true) {
                 ChatMessageContainer message = null;
@@ -78,12 +76,15 @@ public class ClientHandler extends Thread {
 
                 server.forecastMessage(this.client, message.getContent());
             }
+        } catch (EOFException e) {
+            server.removeUser(this.client);
+            server.sendUsersList();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    UsersRecord getUser(String username, String password) {
+    private UsersRecord getUser(String username, String password) {
         try {
             return Database.getUser(username, password);
         } catch (PasswordIsInvalid passwordIsInvalid) {
@@ -91,7 +92,7 @@ public class ClientHandler extends Thread {
         }
     }
 
-    void sendMessage(ChatMessageContainer message) throws IOException {
+    private void sendMessage(ChatMessageContainer message) throws IOException {
         log.info(message.getType().toString());
         out.writeObject(message);
     }
