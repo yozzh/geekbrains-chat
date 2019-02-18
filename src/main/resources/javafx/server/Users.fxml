@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<GridPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="geekbrains.chat.server.UsersController"
+        maxHeight="Infinity" maxWidth="Infinity"
+        prefHeight="480" prefWidth="220"
+        stylesheets="/assets/styles/Chat.css"
+        styleClass="root">
+    <HBox GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+        <ListView fx:id="usersListView" prefWidth="220" />
+    </HBox>
+</GridPane>

@@ -3,8 +3,11 @@ package geekbrains.chat.server;
 import geekbrains.chat.database.Database;
 import geekbrains.chat.providers.chat.models.*;
 import geekbrains.chat.public_.tables.records.UsersRecord;
+import geekbrains.chat.server.events.UsersUpdatedEvent;
 import geekbrains.chat.server.models.ServerClient;
 import geekbrains.chat.server.models.UserWithStatus;
+import geekbrains.chat.utils.events.ControllerEvent;
+import geekbrains.chat.utils.events.ControllerEventDispatcher;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,6 +19,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Server {
+    public ControllerEventDispatcher dispatcher = new ControllerEventDispatcher();
     private final ServerSocket listener;
     private final Logger log;
     private final Set<ServerClient> clients = new HashSet<>();
@@ -51,18 +55,18 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.dispatcher.dispatch(new UsersUpdatedEvent());
         log.info("New user has been added: " + client.getData().getName());
     }
 
     synchronized void removeUser(ServerClient client) {
         System.out.println("Removing users");
-        System.out.println("From: " + clients.size());
         clients.remove(client);
-        System.out.println("To: " + clients.size());
+        this.dispatcher.dispatch(new UsersUpdatedEvent());
         log.info("User has been disconnected: " + client.getData().getName());
     }
 
-    synchronized List<UserWithStatus> getUsers() {
+    public synchronized List<UserWithStatus> getUsers() {
         List<UsersRecord> users = Database.getUsers();
         List<UserWithStatus> result = new ArrayList<>();
 

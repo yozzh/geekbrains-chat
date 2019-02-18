@@ -53,6 +53,9 @@ public class ChatMessageCell extends ListCell<TextMessageContainer> {
             if (item.getUser().equals(user)) {
                 root.getStyleClass().add("is-my-message");
                 root.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+            } else {
+                root.getStyleClass().remove("is-my-message");
+                root.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
             }
 
             setGraphic(root);

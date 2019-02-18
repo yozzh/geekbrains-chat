@@ -77,6 +77,7 @@ public class ClientApp extends javafx.application.Application implements Control
         this.user = user;
 
         if (chatController != null) {
+            stage.setTitle(String.format("Geekbrains Chat :: %s", this.user.getName()));
             chatController.setUser(this.user);
         }
     }

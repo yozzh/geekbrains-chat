@@ -1,12 +1,12 @@
 package geekbrains.chat.client.controllers.chat;
 
 import geekbrains.chat.client.controllers.chat.events.SendMessageEvent;
-import geekbrains.chat.providers.chat.models.ChatMessageContainer;
 import geekbrains.chat.providers.chat.models.TextMessageContainer;
 import geekbrains.chat.public_.tables.records.UsersRecord;
 import geekbrains.chat.server.models.UserWithStatus;
 import geekbrains.chat.utils.events.ControllerEventDispatcher;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,6 +42,11 @@ public class ChatController implements Initializable {
     public ChatController() {
         this.clientsList = FXCollections.observableArrayList();
         this.messagesList = FXCollections.observableArrayList();
+
+        this.messagesList.addListener((ListChangeListener<TextMessageContainer>) c -> {
+            int lastIndex = c.getList().size() - 1;
+            messagesListView.scrollTo(lastIndex);
+        });
     }
 
     public void initialize(URL location, ResourceBundle resources) {
@@ -83,6 +88,7 @@ public class ChatController implements Initializable {
         messagesList.add(message);
         text.clear();
         checkButtonStatus();
+        messagesListView.refresh();
     }
 
     private void sendMessage() {

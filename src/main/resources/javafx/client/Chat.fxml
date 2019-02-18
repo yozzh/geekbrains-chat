@@ -22,8 +22,7 @@
                 <ListView
                     HBox.hgrow="ALWAYS"
                     fx:id="messagesListView"
-                    styleClass="messages-list-view"
-                    mouseTransparent="true" />
+                    styleClass="messages-list-view" />
             </HBox>
             <HBox spacing="10">
                 <padding>
