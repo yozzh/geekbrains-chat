@@ -3,12 +3,13 @@ package geekbrains.chat;
 import geekbrains.chat.client.controllers.auth.AuthController;
 import geekbrains.chat.client.controllers.auth.events.SubmitFormEvent;
 import geekbrains.chat.client.controllers.chat.ChatController;
+import geekbrains.chat.client.controllers.chat.events.SendMessageEvent;
 import geekbrains.chat.providers.chat.ChatProvider;
 import geekbrains.chat.providers.chat.ChatProviderReceiver;
-import geekbrains.chat.providers.chat.models.ChatMessageContainer;
+import geekbrains.chat.providers.chat.models.*;
 import geekbrains.chat.client.controllers.start.StartController;
 import geekbrains.chat.client.controllers.start.events.ReceiveServerSettingsEvent;
-import geekbrains.chat.providers.chat.models.UsersChatMessageContainer;
+import geekbrains.chat.public_.tables.records.UsersRecord;
 import geekbrains.chat.utils.ClientSettings;
 import geekbrains.chat.utils.events.ControllerEvent;
 import geekbrains.chat.utils.events.ControllerEventListener;
@@ -28,6 +29,7 @@ public class ClientApp extends javafx.application.Application implements Control
     private AuthController authController;
     private ChatController chatController;
     private ChatProvider chatProvider;
+    private UsersRecord user;
     private Stage stage;
 
     public static void main(String... args) {
@@ -71,6 +73,14 @@ public class ClientApp extends javafx.application.Application implements Control
         return root;
     }
 
+    private void setUser(UsersRecord user) {
+        this.user = user;
+
+        if (chatController != null) {
+            chatController.setUser(this.user);
+        }
+    }
+
     @Override
     public void callback(ControllerEvent event) {
         switch (event.type) {
@@ -80,6 +90,13 @@ public class ClientApp extends javafx.application.Application implements Control
             case SubmitFormEvent.TYPE:
                 SubmitFormEvent submitFormEvent = (SubmitFormEvent)event;
                 chatProvider.login(submitFormEvent.getLogin(), submitFormEvent.getPassword());
+                break;
+            case SendMessageEvent.TYPE:
+                SendMessageEvent sendMessageEvent = (SendMessageEvent)event;
+                chatProvider.sendMessage(new ChatMessageContainer(
+                        MessageType.MESSAGE,
+                        sendMessageEvent.getMessage()
+                ));
                 break;
         }
     }
@@ -101,8 +118,12 @@ public class ClientApp extends javafx.application.Application implements Control
     }
 
     public void update(Object incomingMessage) {
-        if (incomingMessage instanceof UsersChatMessageContainer) {
+        if (incomingMessage instanceof UserInfoMessageContainer) {
+            incomingMessageListener((UserInfoMessageContainer)incomingMessage);
+        } else if (incomingMessage instanceof UsersChatMessageContainer) {
             incomingMessageListener((UsersChatMessageContainer)incomingMessage);
+        } else if (incomingMessage instanceof TextMessageContainer) {
+            incomingMessageListener((TextMessageContainer)incomingMessage);
         } else if (incomingMessage instanceof ChatMessageContainer) {
             incomingMessageListener((ChatMessageContainer)incomingMessage);
         }
@@ -111,8 +132,6 @@ public class ClientApp extends javafx.application.Application implements Control
     private void incomingMessageListener(ChatMessageContainer incomingMessage) {
         switch (incomingMessage.getType()) {
             case READY_FOR_LOGIN:
-                if (authController != null) return;
-
                 Platform.runLater(() -> {
                     try {
                         stage.close();
@@ -131,6 +150,22 @@ public class ClientApp extends javafx.application.Application implements Control
                     authController.userIsInvalid();
                 });
                 break;
+            case REGISTER_TIMEOUT:
+                Platform.runLater(() -> {
+                    authController.timeout();
+                    try {
+                        stage.close();
+
+                        Parent chatRoot = null;
+                        chatRoot = startWindow();
+                        stage = new Stage();
+                        stage.setScene(new Scene(chatRoot));
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                break;
             case READY_FOR_MESSAGING:
                 if (chatController != null) return;
 
@@ -146,17 +181,30 @@ public class ClientApp extends javafx.application.Application implements Control
                         e.printStackTrace();
                     }
                 });
-                break;
         }
     }
 
     private void incomingMessageListener(UsersChatMessageContainer incomingMessage) {
-        switch (incomingMessage.getType()) {
-            case USERS_LIST:
-                Platform.runLater(() -> {
-                    chatController.setClientsList(incomingMessage.getUsers());
-                });
-                break;
+        if (incomingMessage.getType() == MessageType.USERS_LIST) {
+            Platform.runLater(() -> {
+                chatController.setClientsList(incomingMessage.getUsers());
+            });
+        }
+    }
+
+    private void incomingMessageListener(UserInfoMessageContainer incomingMessage) {
+        if (incomingMessage.getType() == MessageType.USER_INFO) {
+            Platform.runLater(() -> {
+                this.setUser(incomingMessage.getUser());
+            });
+        }
+    }
+
+    private void incomingMessageListener(TextMessageContainer incomingMessage) {
+        if (incomingMessage.getType() == MessageType.MESSAGE) {
+            Platform.runLater(() -> {
+                chatController.addMessage(incomingMessage);
+            });
         }
     }
 }

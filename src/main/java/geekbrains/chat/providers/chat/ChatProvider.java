@@ -34,6 +34,7 @@ public class ChatProvider implements Runnable {
                     e.printStackTrace();
                 }
                 if (this.receiver != null) {
+                    System.out.println(((ChatMessageContainer)message).getType());
                     this.receiver.update(message);
                 }
             }
@@ -46,12 +47,16 @@ public class ChatProvider implements Runnable {
         this.receiver = receiver;
     }
 
-    public void sendMessage(Object message) throws IOException {
-        out.writeObject(message);
+    public void sendMessage(Object message) {
+        try {
+            out.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Object waitForMessage() throws IOException, ClassNotFoundException {
-        return (Object) in.readObject();
+        return in.readObject();
     }
 
     public void login(String login, String password) {

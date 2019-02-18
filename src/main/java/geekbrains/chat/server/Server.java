@@ -1,9 +1,7 @@
 package geekbrains.chat.server;
 
 import geekbrains.chat.database.Database;
-import geekbrains.chat.providers.chat.models.ChatMessageContainer;
-import geekbrains.chat.providers.chat.models.MessageType;
-import geekbrains.chat.providers.chat.models.UsersChatMessageContainer;
+import geekbrains.chat.providers.chat.models.*;
 import geekbrains.chat.public_.tables.records.UsersRecord;
 import geekbrains.chat.server.models.ServerClient;
 import geekbrains.chat.server.models.UserWithStatus;
@@ -48,6 +46,11 @@ public class Server {
 
     synchronized void addUser(ServerClient client) {
         clients.add(client);
+        try {
+            client.getStream().writeObject(new UserInfoMessageContainer(client.getData()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         log.info("New user has been added: " + client.getData().getName());
     }
 
@@ -85,15 +88,19 @@ public class Server {
     }
 
     synchronized void forecastMessage(ServerClient sourceClient, String messageText) throws IOException {
-        String username = sourceClient.getData().getName();
         for (ServerClient client : clients) {
-            client.getStream().writeObject(getMessage(username, messageText));
+            client.getStream().writeObject(
+                new TextMessageContainer(
+                    sourceClient.getData(),
+                    messageText
+                )
+            );
         }
     }
 
     void sendUsersList() {
         UsersChatMessageContainer message = new UsersChatMessageContainer(
-                getUsers()
+            getUsers()
         );
 
         try {

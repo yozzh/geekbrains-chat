@@ -4,15 +4,19 @@ import geekbrains.chat.database.Database;
 import geekbrains.chat.database.PasswordIsInvalid;
 import geekbrains.chat.providers.chat.models.ChatMessageContainer;
 import geekbrains.chat.providers.chat.models.MessageType;
-import geekbrains.chat.providers.chat.models.UsersChatMessageContainer;
 import geekbrains.chat.public_.tables.records.UsersRecord;
 import geekbrains.chat.server.models.ServerClient;
 
-import java.io.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.logging.Logger;
 
 public class ClientHandler extends Thread {
+    private final int REGISTER_TIMEOUT = 10_000;
     private final Logger log;
     private Socket socket;
     private Server server;
@@ -38,12 +42,15 @@ public class ClientHandler extends Thread {
                     MessageType.READY_FOR_LOGIN
                 ));
                 ChatMessageContainer userMessage = null;
+                socket.setSoTimeout(REGISTER_TIMEOUT);
                 try {
                     userMessage = (ChatMessageContainer)in.readObject();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
+                } catch (SocketTimeoutException e) {
+                    registerTimeout();
                 }
-
+                socket.setSoTimeout(0);
                 String[] parts = userMessage.getContent().split(":");
                 UsersRecord user = getUser(parts[0], parts[1]);
                 if (user == null) {
@@ -52,7 +59,6 @@ public class ClientHandler extends Thread {
                     ));
                 } else {
                     this.client = new ServerClient(user, out);
-                    server.addUser(this.client);
                     break;
                 }
             }
@@ -60,6 +66,7 @@ public class ClientHandler extends Thread {
             this.sendMessage(new ChatMessageContainer(
                 MessageType.READY_FOR_MESSAGING
             ));
+            server.addUser(this.client);
             server.sendUsersList();
 
             while (true) {
@@ -82,6 +89,17 @@ public class ClientHandler extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void registerTimeout() {
+        try {
+            this.sendMessage(new ChatMessageContainer(
+                MessageType.REGISTER_TIMEOUT
+            ));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        this.interrupt();
     }
 
     private UsersRecord getUser(String username, String password) {

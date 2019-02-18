@@ -49,4 +49,12 @@ public class AuthController implements Initializable {
 
         alert.showAndWait();
     }
+
+    public void timeout() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Connection timeout!");
+        alert.setHeaderText("Reconnect, please.");
+
+        alert.showAndWait();
+    }
 }
