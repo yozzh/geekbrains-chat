@@ -1,13 +1,13 @@
-package geekbrains.chat.providers.chat;
+package geekbrains.chat.providers.chat.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ChatMessageContainer {
+public class ChatMessageContainer implements Serializable {
     private MessageType type;
     private String content;
-
     private Date date;
 
     public ChatMessageContainer(MessageType type) {
@@ -27,7 +27,7 @@ public class ChatMessageContainer {
         this.date = date;
     }
 
-    MessageType getType() {
+    public MessageType getType() {
         return type;
     }
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<GridPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="geekbrains.chat.client.controllers.chat.ChatController"
+        maxHeight="Infinity" maxWidth="Infinity"
+        prefHeight="480" prefWidth="640"
+        stylesheets="/assets/styles/Chat.css"
+        styleClass="root"
+        onKeyReleased="#stageKeyReleased">
+    <HBox GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+        <ListView fx:id="usersListView" prefWidth="180" />
+        <VBox HBox.hgrow="ALWAYS">
+            <HBox VBox.vgrow="ALWAYS" GridPane.hgrow="ALWAYS">
+                <ListView
+                    HBox.hgrow="ALWAYS"
+                    fx:id="messagesListView"
+                    styleClass="messages-list-view" />
+            </HBox>
+            <HBox spacing="10">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+                <TextField
+                        fx:id="text"
+                        HBox.hgrow="ALWAYS"
+                        promptText="Enter your chat message here.."
+                        onKeyReleased="#textFieldKeyReleased"
+                />
+                <Button fx:id="sendButton" text="Send" onAction="#sendButtonAction" disable="true"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</GridPane>

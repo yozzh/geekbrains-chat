@@ -3,10 +3,7 @@ package geekbrains.chat.database;
 import geekbrains.chat.public_.tables.Users;
 import geekbrains.chat.public_.tables.records.UsersRecord;
 import geekbrains.chat.utils.MD5Hash;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.SQLDialect;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 
 import java.io.UnsupportedEncodingException;
@@ -14,6 +11,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
     private static DSLContext context;
@@ -59,5 +58,17 @@ public class Database {
         }
 
         return user;
+    }
+
+    public static List<UsersRecord> getUsers() {
+        Result<Record2<Integer, String>> users = context.select(
+            Users.USERS.ID,
+            Users.USERS.NAME
+        ).from(Users.USERS).fetch();
+        List<UsersRecord> result = new ArrayList<>();
+        for (Record r : users) {
+            result.add(r.into(Users.USERS));
+        }
+        return result;
     }
 }

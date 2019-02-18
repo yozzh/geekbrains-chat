@@ -1,11 +1,33 @@
-.root {
+.users-list-container {
     -fx-background-color: #EDEFF7;
 }
 
-.loading {
-    -fx-background-color: rgba(255, 255, 255, 0.8);
+.user-name {
+    -fx-font-size: 14;
+}
+.messages-list-view {
+    -fx-background-insets: 0;
+    -fx-padding: 10 0 0 0;
 }
 
-.loading__text {
-    -fx-font-size: 24;
+.messages-list-view .list-cell:even {
+    -fx-background-color: none;
+    -fx-text-fill: none;
+}
+.messages-list-view .list-cell:odd {
+    -fx-background-color: none;
+    -fx-text-fill: none;
+}
+
+.message-container {
+    -fx-background-radius: 10;
+    -fx-background-color: #60CC96;
+}
+
+.message-container__username {
+    -fx-font-weight: bold;
+}
+
+.is-my-message .message-container {
+    -fx-background-color: #47a6cc;
 }

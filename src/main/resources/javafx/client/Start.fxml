@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.Double?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Text?>
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="geekbrains.chat.client.controllers.start.StartController"
+        stylesheets="/assets/styles/Modal.css"
+        prefHeight="$height" prefWidth="$width">
+    <fx:define>
+        <Double fx:id="width"  fx:value="380.0"/>
+        <Double fx:id="height"  fx:value="200.0"/>
+        <Double fx:id="padding"  fx:value="20.0"/>
+        <Double fx:id="labelWidth"  fx:value="120.0"/>
+        <Double fx:id="inputHeight"  fx:value="40.0"/>
+    </fx:define>
+    <StackPane
+            prefHeight="240.0" prefWidth="240.0">
+        <GridPane styleClass="root"
+                  StackPane.alignment="TOP_LEFT"
+                  prefHeight="240.0" prefWidth="240.0"
+                  maxHeight="Infinity" maxWidth="Infinity">
+            <VBox GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS" spacing="$padding">
+                <BorderPane>
+                    <center>
+                        <ImageView>
+                            <image>
+                                <Image url="@/assets/images/logo.png"/>
+                            </image>
+                        </ImageView>
+                    </center>
+                </BorderPane>
+                <padding>
+                    <Insets top="$padding" right="$padding" bottom="$padding" left="$padding" />
+                </padding>
+                <GridPane hgap="$padding" vgap="$padding">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="$labelWidth" prefWidth="$labelWidth" maxWidth="Infinity" halignment="RIGHT" />
+                        <ColumnConstraints minWidth="200" prefWidth="200" maxWidth="Infinity" hgrow="ALWAYS" />
+                    </columnConstraints>
+
+                    <!-- Login Field -->
+                    <Label text="Server address:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <TextField fx:id="serverField" prefHeight="$inputHeight" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                    <!-- Submit Button -->
+                    <Button fx:id="submitButton" text="Connect to server"
+                            prefWidth="140" prefHeight="40" defaultButton="true"
+                            GridPane.columnIndex="0" GridPane.rowIndex="1"
+                            GridPane.columnSpan="2" GridPane.rowSpan="1"
+                            GridPane.halignment="RIGHT"
+                            onAction="#handleSubmitButtonAction" />
+                </GridPane>
+            </VBox>
+        </GridPane>
+        <BorderPane
+                fx:id="overlay"
+                visible="false"
+                minWidth="$width"
+                minHeight="$height"
+                styleClass="loading"
+                StackPane.alignment="TOP_LEFT">
+            <center>
+                <Text styleClass="loading__text">CONNECTING..</Text>
+            </center>
+        </BorderPane>
+    </StackPane>
+</BorderPane>

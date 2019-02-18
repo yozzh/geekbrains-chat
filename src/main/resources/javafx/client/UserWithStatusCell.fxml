@@ -1,0 +1,17 @@
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      stylesheets="/assets/styles/Chat.css"
+      fx:id="root"
+      maxHeight="Infinity" maxWidth="Infinity"
+      spacing="10">
+    <padding>
+        <Insets top="10" right="10" bottom="10" />
+    </padding>
+    <Circle fx:id="circle" centerX="10" centerY="20" fill="darkgreen" radius="10" />
+    <Label fx:id="userNameField" styleClass="user-name" />
+</HBox>

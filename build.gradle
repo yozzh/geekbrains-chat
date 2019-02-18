@@ -26,7 +26,19 @@ dependencies {
 }
 
 application {
-    mainClassName = 'geekbrains.chat.Client'
+    mainClassName = 'geekbrains.chat.Application'
+}
+
+task runServer(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'geekbrains.chat.Application'
+    args 'server'
+}
+
+task runClient(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'geekbrains.chat.Application'
+    args 'client'
 }
 
 flyway {

@@ -10,10 +10,10 @@
 <GridPane
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
-        fx:controller="geekbrains.chat.auth.AuthController"
+        fx:controller="geekbrains.chat.client.controllers.auth.AuthController"
         maxHeight="Infinity" maxWidth="Infinity"
         prefHeight="240.0" prefWidth="240.0"
-        stylesheets="/assets/styles/Chat.css"
+        stylesheets="/assets/styles/Modal.css"
         styleClass="root">
     <fx:define>
         <Double fx:id="padding" fx:value="20.0"/>
