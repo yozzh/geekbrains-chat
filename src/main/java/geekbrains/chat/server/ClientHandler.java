@@ -16,7 +16,7 @@ import java.net.SocketTimeoutException;
 import java.util.logging.Logger;
 
 public class ClientHandler extends Thread {
-    private final int REGISTER_TIMEOUT = 10_000;
+    private final int REGISTER_TIMEOUT = 120_000;
     private final Logger log;
     private Socket socket;
     private Server server;
